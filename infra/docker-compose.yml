@@ -30,8 +30,10 @@ services:
       - db
       - redis
 
-  celery_worker:
-    build: ../backend
+    celery_worker:
+    build:
+      context: ../backend  # Onde o código-fonte do backend está
+      dockerfile: ./backend.Dockerfile # Onde o Dockerfile do backend está, relativo a este docker-compose.yml
     command: celery -A mikrotik_manager_backend worker -l info
     volumes:
       - ../backend:/app
@@ -42,6 +44,7 @@ services:
     depends_on:
       - redis
       - db
+
 
   frontend:
     build:
