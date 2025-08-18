@@ -28,7 +28,7 @@ services:
   backend:
     build:
       context: ../backend
-      dockerfile: backend.Dockerfile
+      dockerfile: ./backend.Dockerfile  # Dockerfile está na pasta infra, que é onde o compose está
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ../backend:/app
@@ -47,7 +47,7 @@ services:
   celery_worker:
     build:
       context: ../backend
-      dockerfile: backend.Dockerfile
+      dockerfile: ./backend.Dockerfile  # também aponta para o mesmo Dockerfile da pasta infra
     command: celery -A mikrotik_manager_backend worker -l info
     volumes:
       - ../backend:/app
@@ -64,7 +64,7 @@ services:
   frontend:
     build:
       context: ../frontend
-      dockerfile: frontend.Dockerfile
+      dockerfile: ./frontend.Dockerfile  # Corrigido: esse Dockerfile também está na pasta infra
     ports:
       - "3000:3000"
     volumes:
