@@ -44,7 +44,9 @@ services:
       - db
 
   frontend:
-    build: ../frontend
+    build:
+      context: ../frontend  # Onde o código-fonte do frontend está
+      dockerfile: ./frontend.Dockerfile # Onde o Dockerfile do frontend está, relativo a este docker-compose.yml
     ports:
       - "3000:3000"
     volumes:
