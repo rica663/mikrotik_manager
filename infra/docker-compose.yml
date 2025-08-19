@@ -1,16 +1,15 @@
-version: '3.8'
 
 services:
   db:
-    image: postgres:13
+    image: postgres:14
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=mikrotik_manager_db
+      - POSTGRES_DB=mikrotik_manager_db      # Banco padronizado
       - POSTGRES_USER=mikrotik_user
       - POSTGRES_PASSWORD=mikrotik_password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U mikrotik_user"]
+      test: ["CMD-SHELL", "pg_isready -U mikrotik_user -d mikrotik_manager_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,10 +27,11 @@ services:
   backend:
     build:
       context: ../backend
-      dockerfile: ./backend.Dockerfile   # <-- Caminho relativo ao docker-compose.yml
+      dockerfile: ./backend.Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ../backend:/app
+    working_dir: /app
     ports:
       - "8000:8000"
     environment:
@@ -47,10 +47,11 @@ services:
   celery_worker:
     build:
       context: ../backend
-      dockerfile: ./backend.Dockerfile   # <-- Mesmo caminho
+      dockerfile: ./backend.Dockerfile
     command: celery -A mikrotik_manager_backend worker -l info
     volumes:
       - ../backend:/app
+    working_dir: /app
     environment:
       - DJANGO_SETTINGS_MODULE=mikrotik_manager_backend.settings
       - CELERY_BROKER_URL=redis://redis:6379/0
@@ -64,12 +65,13 @@ services:
   frontend:
     build:
       context: ../frontend
-      dockerfile: ./frontend.Dockerfile   # <-- Também relativo à pasta atual
+      dockerfile: ./frontend.Dockerfile
     ports:
       - "3000:3000"
     volumes:
       - ../frontend:/app
-      - /app/node_modules:/app/node_modules
+        - /app/node_modules
+    working_dir: /app
     depends_on:
       - backend
 

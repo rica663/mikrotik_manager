@@ -1,19 +1,21 @@
-FROM node:18-alpine
+FROM node:18
 
 WORKDIR /app
 
-# Copy package files
+# Copia package.json e package-lock.json primeiro
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Instala TODAS as dependências, incluindo devDependencies
+RUN npm install --legacy-peer-deps --include=dev
 
-# Copy source code
+# Adiciona o PATH dos binários locais (onde o vite fica instalado)
+ENV PATH="./node_modules/.bin:$PATH"
+
+# Copia o resto do código
 COPY . .
 
-# Expose port
-EXPOSE 3000
+# Expoe a porta padrão do Vite
+EXPOSE 5173
 
-# Start development server
-CMD ["npm", "run", "dev"]
-
+# Comando padrão (host liberado para acesso externo)
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

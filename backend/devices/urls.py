@@ -1,12 +1,7 @@
-from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import MikrotikDeviceViewSet
 
 router = DefaultRouter()
-router.register(r'devices', MikrotikDeviceViewSet)
+router.register(r'devices', MikrotikDeviceViewSet, basename="devices")
 
-urlpatterns = [
-    path('', include(router.urls)),
-]
-
-
+urlpatterns = router.urls
